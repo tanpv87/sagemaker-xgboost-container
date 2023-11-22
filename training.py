@@ -21,12 +21,13 @@ data_prepared_df = data_prepared_df[(data_prepared_df.created_at >= '2022-06-01'
                                        & (data_prepared_df.status == 'active')]
 
 cats = data_prepared_df.select_dtypes(exclude=np.number).columns.tolist()
+print(cats)
 
 for col in cats:
     if col.endswith('trading_amount') or col.endswith('per_transaction'):
         data_prepared_df[col] = data_prepared_df[col].astype('float32')
     else:
-        print(cats)
+        print(col)
         data_prepared_df[col].fillna('TBD', inplace=True)
         data_prepared_df[col] = data_prepared_df[col].astype('category')
 
