@@ -18,7 +18,7 @@ print('hello world!')
 boto3.setup_default_session(region_name='us-east-1')
 
 # data_prepared_df = pd.read_parquet('s3://mlops-feature-stores/data-prepared_withoutpartitioning')
-data_prepared_df = wr.athena.read_sql_query(sql="select * from cloned_user_data where monthly_report >= '2022-06-01' and monthly_report <= '2022-10-31'", database='feature_stores')
+data_prepared_df = wr.athena.read_sql_query(sql="select * from cloned_user_data where monthly_report >= TIMESTAMP '2022-06-01 00:00:00' and monthly_report <= TIMESTAMP '2022-10-31 23:59:59'", database='feature_stores')
 
 data_prepared_df = data_prepared_df[(data_prepared_df.created_at >= '2022-06-01')
                                      & (data_prepared_df.created_at <= '2022-10-31')
