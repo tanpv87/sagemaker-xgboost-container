@@ -26,6 +26,7 @@ for col in cats:
     if col.endswith('trading_amount') or col.endswith('per_transaction'):
         data_prepared_df[col] = data_prepared_df[col].astype('float32')
     else:
+        print(cats)
         data_prepared_df[col].fillna('TBD', inplace=True)
         data_prepared_df[col] = data_prepared_df[col].astype('category')
 
