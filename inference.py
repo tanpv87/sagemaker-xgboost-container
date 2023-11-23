@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import awswrangler as wr
 import boto3
+import uvicorn
 from fastapi import FastAPI, status, Request, Response
 from typing import Union
 
@@ -69,3 +70,6 @@ async def invocations(request: Request):
 @app.get('/ping', status_code=status.HTTP_200_OK)
 def ping():
     return {"message": "ok"}
+
+if __name__ == "__main__":
+    uvicorn.run("inference:app", port=8080, log_level="info")

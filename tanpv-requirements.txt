@@ -9,3 +9,4 @@ fastapi
 pydantic
 awswrangler
 scikit-learn
+uvicorn[standard]
