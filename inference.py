@@ -67,7 +67,7 @@ async def invocations(request: Request):
     return response
 
 @app.get('/ping')
-async def invocations(request: Request):
+async def ping(request: Request):
 
     response = Response(
         content=None,
