@@ -66,12 +66,6 @@ async def invocations(request: Request):
     )
     return response
 
-@app.get('/ping')
-async def ping(request: Request):
-    print('hello world!')
-    response = Response(
-        content=None,
-        status_code=status.HTTP_200_OK,
-        media_type="text/plain",
-    )
-    return response
+@app.get('/ping', status_code=status.HTTP_200_OK)
+def ping():
+    return {"message": "ok"}
