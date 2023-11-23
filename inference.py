@@ -3,10 +3,13 @@ import os
 import numpy as np
 import pandas as pd
 import awswrangler as wr
+import boto3
 from fastapi import FastAPI, status, Request, Response
 from typing import Union
 
 best_threshold = 0.264033
+
+boto3.setup_default_session(region_name='us-east-1')
 
 app = FastAPI()
 
