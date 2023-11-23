@@ -15,7 +15,7 @@ app = FastAPI()
 
 model_path = '/opt/ml/model'
 
-# print([os.path.join(dirpath, f) for (dirpath, _, filenames) in os.walk(model_path) for f in filenames])
+print([os.path.join(dirpath, f) for (dirpath, _, filenames) in os.walk(model_path) for f in filenames])
 
 def load_model(path):
     booster = xgb.Booster()
