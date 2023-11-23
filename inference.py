@@ -20,8 +20,27 @@ def load_model(path):
 
 
 def feature_calculation(users):
-    weekly_p2p_df = wr.athena.read_sql_query(sql="SELECT * FROM weekly_p2p", database="feature_stores")
-    return
+    users_df = wr.athena.read_sql_query(sql="SELECT * FROM cloned_user_data where weekly_report >= TIMESTAMP '2022-11-01 00:00:00' and weekly_report <= TIMESTAMP '2022-11-07 23:59:59'", database="feature_stores")
+    cats = users_df.select_dtypes(exclude=np.number).columns.tolist()
+
+    for col in cats:
+        if col.endswith('trading_amount') or col.endswith('per_transaction'):
+            users_df[col] = users_df[col].astype('float32')
+        else:
+            print(col)
+            users_df[col].fillna('TBD', inplace=True)
+            users_df[col] = users_df[col].astype('category')
+
+    X = users_df.drop(['user_id',
+                       'weekly_report',
+                       'monthly_report',
+                       'is_cloned',
+                       'created_at',
+                       'status',
+                       'username',
+                       'label'], axis=1)
+    
+    return X
 
 
 def predict_output(body):
@@ -39,6 +58,16 @@ async def invocations(request: Request):
 
     response = Response(
         content=model_resp,
+        status_code=status.HTTP_200_OK,
+        media_type="text/plain",
+    )
+    return response
+
+@app.get('/ping')
+async def invocations(request: Request):
+
+    response = Response(
+        content=None,
         status_code=status.HTTP_200_OK,
         media_type="text/plain",
     )
