@@ -68,7 +68,7 @@ async def invocations(request: Request):
 
 @app.get('/ping')
 async def ping(request: Request):
-
+    print('hello world!')
     response = Response(
         content=None,
         status_code=status.HTTP_200_OK,
