@@ -55,10 +55,10 @@ def predict_output(body):
 
 
 @app.post('/invocations')
-async def invocations(request: Request):
+def invocations(request: Request):
     # model() is a hypothetical function that gets the inference output:
     print(request.json())
-    model_resp = await predict_output(request.json())
+    model_resp = predict_output(request.json())
     print(model_resp)
 
     response = Response(
