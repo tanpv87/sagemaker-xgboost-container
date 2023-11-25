@@ -19,9 +19,9 @@ model_path = '/opt/ml/model'
 
 print([os.path.join(dirpath, f) for (dirpath, _, filenames) in os.walk(model_path) for f in filenames])
 
-async def load_model(path):
+def load_model(path):
     booster = xgb.Booster()
-    return await booster.load_model(path)
+    return booster.load_model(path)
 
 
 async def feature_calculation(users):
@@ -49,7 +49,7 @@ async def feature_calculation(users):
 
 
 async def predict_output(body):
-    booster = await load_model('/opt/ml/model/cloned_user_detection.json')
+    booster = load_model('/opt/ml/model/cloned_user_detection.json')
     user_features = await feature_calculation(body['users'])
     predicted_label = await np.where(np.array([pred[1] for pred in booster.predict_proba(user_features)]) >= best_threshold, 1, 0).tolist()
     return await zip(body['users'], predicted_label)
