@@ -5,6 +5,7 @@ import pandas as pd
 import awswrangler as wr
 import boto3
 import uvicorn
+import asyncio
 from fastapi import FastAPI, status, Request, Response
 from typing import Union
 
@@ -18,12 +19,12 @@ model_path = '/opt/ml/model'
 
 print([os.path.join(dirpath, f) for (dirpath, _, filenames) in os.walk(model_path) for f in filenames])
 
-def load_model(path):
+async def load_model(path):
     booster = xgb.Booster()
-    return booster.load_model(path)
+    return await booster.load_model(path)
 
 
-def feature_calculation(users):
+async def feature_calculation(users):
     users_df = wr.athena.read_sql_query(sql="SELECT * FROM cloned_user_data where weekly_report >= TIMESTAMP '2022-11-01 00:00:00' and weekly_report <= TIMESTAMP '2022-11-07 23:59:59'", database="feature_stores")
     cats = users_df.select_dtypes(exclude=np.number).columns.tolist()
 
@@ -47,19 +48,19 @@ def feature_calculation(users):
     return X
 
 
-def predict_output(body):
-    booster = load_model('/opt/ml/model/cloned_user_detection.json')
-    user_features = feature_calculation(body['users'])
-    predicted_label = np.where(np.array([pred[1] for pred in booster.predict_proba(user_features)]) >= best_threshold, 1, 0).tolist()
-    return zip(body['users'], predicted_label)
+async def predict_output(body):
+    booster = await load_model('/opt/ml/model/cloned_user_detection.json')
+    user_features = await feature_calculation(body['users'])
+    predicted_label = await np.where(np.array([pred[1] for pred in booster.predict_proba(user_features)]) >= best_threshold, 1, 0).tolist()
+    return await zip(body['users'], predicted_label)
 
 
 @app.post('/invocations')
-def invocations(request: Request):
+async def invocations(request: Request):
     # model() is a hypothetical function that gets the inference output:
-    print(request.json())
-    model_resp = predict_output(request.json())
-    print(model_resp)
+    (print(await request.json()))
+    model_resp = await predict_output(await request.json())
+    print(await model_resp)
 
     response = Response(
         content=model_resp,
@@ -69,7 +70,7 @@ def invocations(request: Request):
     return response
 
 @app.get('/ping', status_code=status.HTTP_200_OK)
-def ping():
+async def ping():
     return {"message": "ok"}
 
 if __name__ == "__main__":
