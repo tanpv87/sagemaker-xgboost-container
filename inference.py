@@ -58,7 +58,7 @@ async def feature_calculation(users):
 async def predict_output(body):
     user_features = await feature_calculation(body['users'])
     predicted_label = np.where(np.array([pred[1] for pred in xgb_model_loaded.predict_proba(user_features)]) >= best_threshold, 1, 0).tolist()
-    return await zip(body['users'], predicted_label)
+    return zip(body['users'], predicted_label)
 
 
 @app.post('/invocations')
