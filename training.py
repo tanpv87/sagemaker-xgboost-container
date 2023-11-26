@@ -11,6 +11,7 @@ from sklearn.metrics import mean_squared_error, roc_curve
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report, confusion_matrix
 import boto3
 import awswrangler as wr
+import pickle
 from botocore.exceptions import ClientError
 
 print('hello world!')
@@ -64,13 +65,16 @@ model_path_basename = '/src/ml_model'
 if not os.path.exists(model_path_basename):
     os.makedirs(model_path_basename)
 
-model_path = os.path.join(model_path_basename, 'cloned_user_detection.json')
+model_path = os.path.join(model_path_basename, 'cloned_user_detection.pkl')
 
 output_filename = 'cloned_user_detection.tar.gz'
 
 arcname = os.path.basename(model_path)
 
-xgb_classifier.save_model(model_path)
+# save
+with open(model_path, "wb") as f:
+    pickle.dump(xgb_classifier, f)
+# xgb_classifier.save_model(model_path)
 
 with tarfile.open(output_filename, "w:gz") as tar:
     tar.add(model_path, arcname=arcname)
