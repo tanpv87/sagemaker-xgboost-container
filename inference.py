@@ -21,7 +21,7 @@ print([os.path.join(dirpath, f) for (dirpath, _, filenames) in os.walk(model_pat
 
 
 booster = xgb.Booster()
-xgb_model = booster.load_model('/opt/ml/model/cloned_user_detection.json')
+xgb_model = booster.load_model('/src/cloned_user_detection.json')
 print(type(xgb_model))
 print("model loaded")
 
