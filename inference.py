@@ -6,6 +6,7 @@ import awswrangler as wr
 import boto3
 import uvicorn
 import asyncio
+import pickle
 from fastapi import FastAPI, status, Request, Response
 from typing import Union
 
@@ -20,13 +21,14 @@ model_path = '/opt/ml/model'
 print([os.path.join(dirpath, f) for (dirpath, _, filenames) in os.walk(model_path) for f in filenames])
 
 
-booster = xgb.Booster()
-print('/src/cloned_user_detection.json')
-xgb_model = booster.load_model('/src/cloned_user_detection.json')
-print(type(xgb_model))
+print('/src/cloned_user_detection.pkl')
+with open('/src/cloned_user_detection.pkl', 'rb') as f:
+    xgb_model_loaded = pickle.load(f)
+print(type(xgb_model_loaded))
 print("model loaded from user provided")
-xgb_model = booster.load_model('/opt/ml/model/cloned_user_detection.json')
-print(type(xgb_model))
+with open('/opt/ml/model/cloned_user_detection.pkl', 'rb') as f:
+    xgb_model_loaded = pickle.load(f)
+print(type(xgb_model_loaded))
 print("model loaded from aws provided")
 
 async def feature_calculation(users):
@@ -50,12 +52,12 @@ async def feature_calculation(users):
                        'username',
                        'label'], axis=1)
     
-    return xgb.DMatrix(X, enable_categorical=True)
+    return X
 
 
 async def predict_output(body):
     user_features = await feature_calculation(body['users'])
-    predicted_label = np.where(np.array([pred for pred in booster.predict(user_features)]) >= best_threshold, 1, 0).tolist()
+    predicted_label = np.where(np.array([pred[1] for pred in xgb_model_loaded.predict_proba(user_features)]) >= best_threshold, 1, 0).tolist()
     return await zip(body['users'], predicted_label)
 
 
