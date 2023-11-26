@@ -21,10 +21,13 @@ print([os.path.join(dirpath, f) for (dirpath, _, filenames) in os.walk(model_pat
 
 
 booster = xgb.Booster()
+print('/src/cloned_user_detection.json')
 xgb_model = booster.load_model('/src/cloned_user_detection.json')
 print(type(xgb_model))
-print("model loaded")
-
+print("model loaded from user provided")
+xgb_model = booster.load_model('/opt/ml/model/cloned_user_detection.json')
+print(type(xgb_model))
+print("model loaded from aws provided")
 
 async def feature_calculation(users):
     users_df = wr.athena.read_sql_query(sql="SELECT * FROM cloned_user_data where weekly_report >= TIMESTAMP '2022-11-01 00:00:00' and weekly_report <= TIMESTAMP '2022-11-07 23:59:59'", database="feature_stores")
