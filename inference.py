@@ -51,7 +51,7 @@ async def feature_calculation(body):
 
 
 async def predict_output(body):
-    user_features = await feature_calculation(body['users'])
+    user_features = await feature_calculation(body)
     predicted_label = np.where(np.array([pred[1] for pred in xgb_model_loaded.predict_proba(user_features.drop(['user_id'], axis=1))]) >= best_threshold, 1, 0).tolist()
     return dict(zip(user_features['user_id'].tolist(), predicted_label))
 
