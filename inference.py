@@ -38,8 +38,7 @@ async def feature_calculation(users):
             users_df[col].fillna('TBD', inplace=True)
             users_df[col] = users_df[col].astype('category')
 
-    X = users_df.drop(['user_id',
-                       'weekly_report',
+    X = users_df.drop(['weekly_report',
                        'monthly_report',
                        'is_cloned',
                        'created_at',
@@ -52,7 +51,7 @@ async def feature_calculation(users):
 
 async def predict_output(body):
     user_features = await feature_calculation(body['users'])
-    predicted_label = np.where(np.array([pred[1] for pred in xgb_model_loaded.predict_proba(user_features)]) >= best_threshold, 1, 0).tolist()
+    predicted_label = np.where(np.array([pred[1] for pred in xgb_model_loaded.predict_proba(user_features.drop(['user_id'], axis=1))]) >= best_threshold, 1, 0).tolist()
     return dict(zip(user_features['user_id'].tolist(), predicted_label))
 
 
