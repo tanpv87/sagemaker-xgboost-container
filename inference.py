@@ -20,12 +20,6 @@ model_path = '/opt/ml/model'
 
 print([os.path.join(dirpath, f) for (dirpath, _, filenames) in os.walk(model_path) for f in filenames])
 
-
-print('/src/cloned_user_detection.pkl')
-with open('/src/cloned_user_detection.pkl', 'rb') as f:
-    xgb_model_loaded = pickle.load(f)
-print(type(xgb_model_loaded))
-print("model loaded from user provided")
 with open('/opt/ml/model/cloned_user_detection.pkl', 'rb') as f:
     xgb_model_loaded = pickle.load(f)
 print(type(xgb_model_loaded))
@@ -66,7 +60,7 @@ async def invocations(request: Request):
     # model() is a hypothetical function that gets the inference output:
     (print(await request.json()))
     model_resp = await predict_output(await request.json())
-    print(await model_resp)
+    print(model_resp)
 
     response = Response(
         content=model_resp,
