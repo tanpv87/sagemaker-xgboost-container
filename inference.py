@@ -7,7 +7,8 @@ import boto3
 import uvicorn
 import asyncio
 import pickle
-from fastapi import FastAPI, status, Request, Response, JSONResponse
+from fastapi import FastAPI, status, Request, Response
+from fastapi.responses import JSONResponse
 from typing import Union
 
 best_threshold = 0.264033
@@ -52,7 +53,7 @@ async def feature_calculation(users):
 async def predict_output(body):
     user_features = await feature_calculation(body['users'])
     predicted_label = np.where(np.array([pred[1] for pred in xgb_model_loaded.predict_proba(user_features)]) >= best_threshold, 1, 0).tolist()
-    return dict(zip(body['users'], predicted_label))
+    return dict(zip(user_features['user_id'].tolist(), predicted_label))
 
 
 @app.post('/invocations')
