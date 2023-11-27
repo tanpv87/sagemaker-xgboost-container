@@ -26,8 +26,9 @@ with open('/opt/ml/model/cloned_user_detection.pkl', 'rb') as f:
 print(type(xgb_model_loaded))
 print("model loaded from aws provided")
 
-async def feature_calculation(users):
-    users_df = wr.athena.read_sql_query(sql="SELECT * FROM cloned_user_data where weekly_report >= TIMESTAMP '2022-11-01 00:00:00' and weekly_report <= TIMESTAMP '2022-11-07 23:59:59'", database="feature_stores")
+
+async def feature_calculation(body):
+    users_df = wr.athena.read_sql_query(sql=f"SELECT * FROM cloned_user_data where weekly_report >= TIMESTAMP '{body['start_date']} 00:00:00' and weekly_report <= TIMESTAMP '{body['end_date']} 23:59:59'", database="feature_stores")
     cats = users_df.select_dtypes(exclude=np.number).columns.tolist()
 
     for col in cats:
@@ -58,8 +59,8 @@ async def predict_output(body):
 @app.post('/invocations')
 async def invocations(request: Request):
     # model() is a hypothetical function that gets the inference output:
-    (print(await request.json()))
-    model_resp = await predict_output(await request.json())
+    body = await request.json()
+    model_resp = await predict_output(body)
     print(model_resp)
 
     response = JSONResponse(
