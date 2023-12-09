@@ -19,7 +19,7 @@ model_path_basename = '/src/ml_model'
 start_date = os.environ.get('start_date', '2022-01-01')
 print(start_date)
 
-end_date = os.environ.get('start_date', '2022-12-31')
+end_date = os.environ.get('end_date', '2022-12-31')
 print(end_date)
 
 s3_bucket = os.environ.get('s3_bucket', 'mlops-feature-stores')
